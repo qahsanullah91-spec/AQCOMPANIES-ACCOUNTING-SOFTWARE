@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing & Coverage
+coverage/
+.nyc_output
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Production & Build outputs
+.next/
+out/
+build/
+dist/
+*.egg-info/
+wheels/
+tsconfig.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Environment files
+.env
+.env*.local
+!.env.example
+
+# Databases, Backups, Local Uploads & Logs
+*.db
+*.db-shm
+*.db-wal
+*.db.bak
+*.sqlite
+*.sqlite3
+*.db-journal
+*.log
+backend/backups/*
+!backend/backups/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/logs/*
+!backend/logs/.gitkeep
+*.zip
+*.tar.gz
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Tool specific
+.codeboarding/

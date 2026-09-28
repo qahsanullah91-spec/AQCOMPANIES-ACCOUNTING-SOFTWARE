@@ -1,0 +1,76 @@
+name: AQ Companies - Safe Production Deployment & Release Pipeline
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "Target deployment environment"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - production
+      dry_run:
+        description: "Dry-run verification mode (do not commit release)"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: deploy-${{ github.event.inputs.target_environment || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  pre-deploy-audit:
+    name: Pre-Deployment Accounting & Integrity Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        working-directory: ./backend
+        run: |
+          pip install -r <(python -c "import tomllib; [print(d) for d in tomllib.load(open('pyproject.toml', 'rb'))['project']['dependencies']]") pytest
+
+      - name: Run Golden Accounting Invariant Checks
+        working-directory: ./backend
+        run: |
+          python -m pytest tests/accounting/test_golden_accounting_regression.py -v
+
+  deploy-target:
+    name: Safe Production Deployment Execution
+    needs: [pre-deploy-audit]
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.target_environment || 'production' }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Deployment Dependencies
+        working-directory: ./backend
+        run: |
+          pip install -r <(python -c "import tomllib; [print(d) for d in tomllib.load(open('pyproject.toml', 'rb'))['project']['dependencies']]")
+
+      - name: Execute 9-Step Production Deployment Flow
+        working-directory: ./backend
+        env:
+          APP_ENV: ${{ github.event.inputs.target_environment || 'production' }}
+          ENVIRONMENT: ${{ github.event.inputs.target_environment || 'production' }}
+        run: |
+          python scripts/deploy_production.py ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}

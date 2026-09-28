@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aq_companies_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://aq_user:aq_secure_password_2026@db:5432/aq_companies_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=aq_prod_super_secret_signing_key_change_in_env_2026
+      - CORS_ORIGINS=["http://localhost:3000","http://127.0.0.1:3000"]
+      - GUNICORN_WORKERS=4
+    volumes:
+      - app_uploads:/app/uploads
+      - app_backups:/app/backups
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aq_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  db:
+    image: postgres:16-alpine
+    container_name: aq_companies_db
+    restart: always
+    environment:
+      POSTGRES_USER: aq_user
+      POSTGRES_PASSWORD: aq_secure_password_2026
+      POSTGRES_DB: aq_companies_db
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - aq_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aq_user -d aq_companies_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: aq_companies_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - aq_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+    driver: local
+  redis_data:
+    driver: local
+  app_uploads:
+    driver: local
+  app_backups:
+    driver: local
+
+networks:
+  aq_network:
+    driver: bridge

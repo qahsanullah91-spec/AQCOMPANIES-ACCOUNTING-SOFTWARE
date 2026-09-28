@@ -1,0 +1,89 @@
+name: AQ Companies - Backend CI & Accounting Verification
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  backend-ci:
+    name: Backend CI (PostgreSQL 16 & SQLite)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: aq_companies_test
+          POSTGRES_USER: aq_user
+          POSTGRES_PASSWORD: aq_secure_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      APP_ENV: testing
+      ENVIRONMENT: testing
+      DATABASE_URL: sqlite:///./aq_companies.db
+      TEST_DATABASE_URL: postgresql://aq_user:aq_secure_password@localhost:5432/aq_companies_test
+      SECRET_KEY: ci-test-secret-key-must-be-at-least-32-chars-long
+      MAINTENANCE_BYPASS_TOKEN: ci-maintenance-bypass-token
+      PYTHONPATH: backend
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r <(python -c "import tomllib; [print(d) for d in tomllib.load(open('pyproject.toml', 'rb'))['project']['dependencies']]") psycopg2-binary httpx pytest
+
+      - name: Syntax & Lint Verification
+        working-directory: ./backend
+        run: |
+          python -m compileall app scripts tests
+
+      - name: Database Migration Safety Check
+        working-directory: ./backend
+        run: |
+          python -m app.tools.migration_check
+
+      - name: Migration Lifecycle Tests
+        working-directory: ./backend
+        run: |
+          python -m pytest tests/test_migration_lifecycle.py -v
+
+      - name: Golden Accounting Regression Tests
+        working-directory: ./backend
+        run: |
+          python -m pytest tests/accounting/test_golden_accounting_regression.py -v -m accounting
+
+      - name: API Contract & Schema Drift Tests
+        working-directory: ./backend
+        run: |
+          python -m pytest tests/api/test_api_contracts.py -v -m api
+
+      - name: Automated Disaster Recovery Restore Verification
+        working-directory: ./backend
+        run: |
+          python -m app.tools.pre_deploy_backup
+          python scripts/test_restore.py
+
+      - name: Execute Full Test Suite
+        working-directory: ./backend
+        run: |
+          python -m pytest tests/ -v

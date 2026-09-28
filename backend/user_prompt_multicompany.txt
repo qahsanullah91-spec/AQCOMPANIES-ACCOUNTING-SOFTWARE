@@ -1,0 +1,1275 @@
+<USER_REQUEST>
+NEXT PHASE — AQ COMPANIES
+MULTI-COMPANY ACCOUNTING + CONSOLIDATION + CENTRAL TREASURY
+
+PROJECT:
+AQ COMPANIES
+Trading • Logistics • Accounting
+
+IMPORTANT:
+
+Continue from the existing:
+
+General Ledger
+Banking
+Cash
+Sarafi
+Receivables
+Payables
+Transport Accounting
+Financial Reporting
+Bank Reconciliation
+Approval Workflow
+Backup / Restore
+Audit Controls
+
+DO NOT rebuild existing accounting modules.
+
+FOCUS NOW ON:
+
+MULTI-COMPANY ACCOUNTING
+SEPARATE COMPANY BOOKS
+CENTRAL TREASURY
+INTERCOMPANY TRANSACTIONS
+CONSOLIDATED REPORTING
+COMPANY-WISE BANK ACCOUNTS
+COMPANY-WISE PROFIT
+COMPANY-WISE RECEIVABLES
+COMPANY-WISE PAYABLES
+
+==================================================
+1. MULTI-COMPANY ARCHITECTURE
+==================================================
+
+AQ COMPANIES must support multiple legal/business entities.
+
+Create table:
+
+companies
+
+Fields:
+
+id
+company_code
+company_name
+legal_name
+trade_license_no
+tax_number
+country
+address
+phone
+email
+base_currency
+logo
+status
+created_at
+updated_at
+
+Examples may include:
+
+AQ COMPANIES
+NAJEB AMIN LTD
+SKY ARIANA LTD
+RAHMAT NAZAR LTD
+and other companies added later.
+
+Do NOT hardcode company names.
+
+==================================================
+2. COMPANY SWITCHER
+==================================================
+
+Add company selector in top navigation.
+
+Example:
+
+AQ COMPANIES ▼
+
+Options:
+
+ALL COMPANIES
+NAJEB AMIN LTD
+SKY ARIANA LTD
+OTHER COMPANY
+
+When a company is selected:
+
+Dashboard
+Banking
+Receivables
+Payables
+P&L
+Reports
+
+must show that company's data only.
+
+==================================================
+3. CONSOLIDATED MODE
+==================================================
+
+Add:
+
+ALL COMPANIES / CONSOLIDATED
+
+This should show group-level totals.
+
+Examples:
+
+Total Sales
+Total Bank Balance
+Total Receivables
+Total Payables
+Total Transport Costs
+Total Expenses
+Known Profit
+
+Do NOT simply add duplicate intercompany transactions.
+
+Eliminate intercompany balances in consolidated reports.
+
+==================================================
+4. COMPANY OWNERSHIP OF RECORDS
+==================================================
+
+Every financial record must belong to a company.
+
+Add company_id to:
+
+customers where appropriate
+suppliers
+bank_accounts
+cash_accounts
+sarafi_accounts
+invoices
+purchases
+shipments
+bank_transactions
+journal_entries
+journal_lines
+expenses
+transport_charges
+transport_payments
+documents
+accounting_periods
+budgets
+
+No financial transaction should exist without company context.
+
+==================================================
+5. COMPANY-SPECIFIC CHART OF ACCOUNTS
+==================================================
+
+Support:
+
+Shared Chart of Accounts Template
+
++
+
+Company-specific accounts.
+
+Example:
+
+AQ Companies standard account:
+
+1100 Accounts Receivable
+
+Each company can use same account code structure.
+
+Allow company-specific extensions.
+
+==================================================
+6. COMPANY BANK ACCOUNTS
+==================================================
+
+Each bank account belongs to one company.
+
+Fields:
+
+Company
+Bank
+Account Name
+Account Number
+Currency
+SWIFT
+Opening Balance
+Current Balance
+
+Example:
+
+SKY ARIANA LTD
+Afghan United Bank
+USD Account
+
+Must not appear as NAJEB AMIN LTD's bank balance.
+
+==================================================
+7. COMPANY CASH ACCOUNTS
+==================================================
+
+Separate:
+
+Cash USD
+Cash AFN
+Cash AED
+
+per company.
+
+Example:
+
+NAJEB AMIN LTD – Cash USD
+
+SKY ARIANA LTD – Cash USD
+
+Do not mix balances.
+
+==================================================
+8. COMPANY SARAFI ACCOUNTS
+==================================================
+
+Sarafi relationships may be separate by company.
+
+Track:
+
+Company
+Sarafi
+Currency
+Balance
+
+If same Sarafi serves multiple companies:
+
+Keep separate company ledgers.
+
+==================================================
+9. CUSTOMER ACCOUNT BY COMPANY
+==================================================
+
+A customer may buy from more than one AQ company.
+
+Example:
+
+MANIK TRADERS
+
+could have:
+
+NAJEB AMIN LTD balance
+
+and
+
+OTHER COMPANY balance
+
+Keep balances separate.
+
+Customer master can be shared.
+
+Customer financial ledger must be company-specific.
+
+==================================================
+10. SUPPLIER ACCOUNT BY COMPANY
+==================================================
+
+Same principle.
+
+One supplier master.
+
+Separate payable ledgers per company.
+
+==================================================
+11. INTERCOMPANY ACCOUNTING
+==================================================
+
+Build proper Intercompany Accounting.
+
+Example:
+
+SKY ARIANA LTD pays $50,000 on behalf of NAJEB AMIN LTD.
+
+Do NOT record it as an expense for SKY ARIANA.
+
+Create:
+
+SKY ARIANA LTD:
+
+Dr Intercompany Receivable — Najeb Amin
+Cr Bank
+
+NAJEB AMIN LTD:
+
+Dr Relevant Payable / Expense
+Cr Intercompany Payable — Sky Ariana
+
+==================================================
+12. INTERCOMPANY ACCOUNTS
+==================================================
+
+Create automatic accounts:
+
+Due From Company
+
+Due To Company
+
+Example:
+
+1350 Due From Related Companies
+
+2350 Due To Related Companies
+
+Track by counterparty company.
+
+==================================================
+13. INTERCOMPANY TRANSACTION SCREEN
+==================================================
+
+Create:
+
++ INTERCOMPANY TRANSACTION
+
+Fields:
+
+Date
+From Company
+To Company
+Transaction Type
+Amount
+Currency
+FX Rate
+Purpose
+Reference
+Notes
+
+Types:
+
+PAYMENT_ON_BEHALF
+CASH_TRANSFER
+BANK_TRANSFER
+EXPENSE_ON_BEHALF
+LOAN
+ADVANCE
+SETTLEMENT
+OTHER
+
+==================================================
+14. INTERCOMPANY TRANSFER
+==================================================
+
+Example:
+
+Transfer:
+
+$100,000
+
+From:
+SKY ARIANA LTD Bank
+
+To:
+NAJEB AMIN LTD Bank
+
+Source company:
+
+Dr Due From Najeb Amin
+Cr Bank
+
+Destination company:
+
+Dr Bank
+Cr Due To Sky Ariana
+
+Do not count as group revenue or group expense.
+
+==================================================
+15. INTERCOMPANY MATCHING
+==================================================
+
+One side of intercompany transaction must match the other side.
+
+Show:
+
+MATCHED
+
+or
+
+OUT OF BALANCE
+
+Validate:
+
+Company A Receivable
+=
+Company B Payable
+
+==================================================
+16. INTERCOMPANY RECONCILIATION
+==================================================
+
+Create page:
+
+/accounting/intercompany
+
+Show:
+
+Company A
+Company B
+Due From
+Due To
+Difference
+
+Difference should be:
+
+0.00
+
+If not:
+
+Show reconciliation warning.
+
+==================================================
+17. INTERCOMPANY ELIMINATION
+==================================================
+
+For consolidated reports:
+
+Eliminate:
+
+Intercompany Receivables
+Intercompany Payables
+Intercompany Sales
+Intercompany Purchases
+Intercompany Loans
+Internal Transfers
+
+Do not eliminate third-party transactions.
+
+==================================================
+18. CONSOLIDATED P&L
+==================================================
+
+Create:
+
+/accounting/consolidated/profit-loss
+
+Columns:
+
+Account
+Company 1
+Company 2
+Other Companies
+Eliminations
+Consolidated Total
+
+Example:
+
+Sales Revenue
+Purchase Cost
+Freight
+Expenses
+Profit
+
+==================================================
+19. CONSOLIDATED BALANCE SHEET
+==================================================
+
+Create:
+
+/accounting/consolidated/balance-sheet
+
+Columns:
+
+Account
+Company A
+Company B
+Eliminations
+Consolidated
+
+Ensure:
+
+Assets =
+Liabilities + Equity
+
+after eliminations.
+
+==================================================
+20. CONSOLIDATED CASH POSITION
+==================================================
+
+Build central treasury view.
+
+Show all:
+
+Bank Accounts
+Cash Accounts
+Sarafi Accounts
+
+Grouped by:
+
+Company
+Currency
+
+Example:
+
+USD:
+
+Sky Ariana:
+$X
+
+Najeb Amin:
+$Y
+
+Total Group USD:
+$Z
+
+==================================================
+21. TREASURY DASHBOARD
+==================================================
+
+Create:
+
+/treasury
+
+Show:
+
+Total Group Cash
+Total Bank Balance
+Cash by Company
+Cash by Currency
+Money In
+Money Out
+Customer Receipts
+Major Payments
+Intercompany Balances
+
+==================================================
+22. CURRENCY POSITION
+==================================================
+
+Show group holdings by currency:
+
+USD
+AFN
+AED
+INR
+
+Display:
+
+Original Currency Amount
+
+and
+
+USD Equivalent
+
+Do not lose original currency amounts.
+
+==================================================
+23. TREASURY TRANSFER
+==================================================
+
+Create central:
+
+TRANSFER MONEY
+
+Support:
+
+Same Company:
+Bank → Cash
+
+Different Company:
+Company A Bank → Company B Bank
+
+If different companies:
+
+Automatically create intercompany accounting entries.
+
+==================================================
+24. COMPANY-WISE SALES REPORT
+==================================================
+
+Show:
+
+Company
+Sales
+Invoices
+Customers
+Net KG
+Containers
+
+Filters:
+
+Date
+Customer
+Product
+
+==================================================
+25. COMPANY-WISE RECEIVABLES
+==================================================
+
+Show:
+
+Company
+Customer
+Invoice
+Outstanding
+
+Do not merge customer balances across companies unless in consolidated view.
+
+==================================================
+26. COMPANY-WISE PAYABLES
+==================================================
+
+Show:
+
+Company
+Supplier
+Known Purchases
+Paid
+Outstanding
+
+Pending purchase costs remain separate.
+
+==================================================
+27. COMPANY-WISE TRANSPORT ACCOUNT
+==================================================
+
+Transport company may serve multiple AQ companies.
+
+Track:
+
+Freight Charges
+Payments
+Credits
+
+separately per company.
+
+==================================================
+28. SHARED TRANSPORT PAYMENT
+==================================================
+
+If one AQ company pays transport charges for another:
+
+Create intercompany transaction automatically.
+
+Do not distort freight cost ownership.
+
+==================================================
+29. COMPANY PROFITABILITY
+==================================================
+
+Create management report:
+
+Company
+Revenue
+Known Purchase Cost
+Transport Cost
+Other Cost
+Known Profit
+
+If purchase cost incomplete:
+
+Display:
+
+PROFIT INCOMPLETE
+
+==================================================
+30. GROUP MANAGEMENT DASHBOARD
+==================================================
+
+Create:
+
+/management/group
+
+Show:
+
+Total Group Sales
+
+Sales by Company
+
+Group Receivables
+
+Group Payables
+
+Group Cash
+
+Transport Position
+
+Known Profit
+
+Pending Purchase Costs
+
+Intercompany Balances
+
+==================================================
+31. COMPANY COMPARISON
+==================================================
+
+Compare companies using factual financial metrics.
+
+Show:
+
+Revenue
+Receivables
+Expenses
+Cash Position
+Shipment Volume
+Net KG
+
+Do not create arbitrary ratings or scores.
+
+==================================================
+32. COMPANY FILTER EVERYWHERE
+==================================================
+
+Add reusable company filter to:
+
+Dashboard
+Banking
+Accounting
+Reports
+Customers
+Suppliers
+Expenses
+Transport
+Shipments
+
+Options:
+
+Current Company
+Selected Companies
+All Companies
+
+==================================================
+33. COMPANY ACCESS PERMISSION
+==================================================
+
+Users may have access to specific companies only.
+
+Example:
+
+User A:
+
+NAJEB AMIN LTD
+View + Edit
+
+SKY ARIANA LTD
+No Access
+
+Admin:
+All Companies
+
+==================================================
+34. USER COMPANY MEMBERSHIP
+==================================================
+
+Create:
+
+user_company_access
+
+Fields:
+
+user_id
+company_id
+role
+can_view
+can_create
+can_edit
+can_post
+can_approve
+
+==================================================
+35. PREVENT CROSS-COMPANY DATA LEAK
+==================================================
+
+CRITICAL:
+
+Backend must enforce company access.
+
+Do NOT rely only on frontend filters.
+
+A user without access must not retrieve company data through API manually.
+
+==================================================
+36. COMPANY-SCOPED API
+==================================================
+
+APIs should support company context.
+
+Example:
+
+GET /api/accounting/dashboard?company_id=1
+
+GET /api/banking/transactions?company_id=1
+
+Backend validates permission.
+
+==================================================
+37. COMPANY-SPECIFIC NUMBERING
+==================================================
+
+Support different document sequences.
+
+Example:
+
+Najeb Amin:
+
+INV-NA-2026-0001
+
+Sky Ariana:
+
+INV-SA-2026-0001
+
+Journal:
+
+JV-NA-2026-000001
+
+JV-SA-2026-000001
+
+Make patterns configurable.
+
+==================================================
+38. CENTRAL CUSTOMER MASTER
+==================================================
+
+Avoid duplicate customer masters where same customer works with multiple companies.
+
+Use:
+
+customers
+
+plus:
+
+company_customer_accounts
+
+This allows one customer identity with multiple company balances.
+
+==================================================
+39. CENTRAL SUPPLIER MASTER
+==================================================
+
+Same structure:
+
+suppliers
+
+company_supplier_accounts
+
+==================================================
+40. MULTI-COMPANY BANK IMPORT
+==================================================
+
+When bank statement uploaded:
+
+System must know owning company.
+
+Never import bank statement to wrong company's account.
+
+==================================================
+41. INTERCOMPANY AUDIT TRAIL
+==================================================
+
+Track:
+
+Created By
+
+Source Company
+
+Destination Company
+
+Amount
+
+Journal A
+
+Journal B
+
+Approval
+
+Settlement
+
+Reversal
+
+==================================================
+42. INTERCOMPANY SETTLEMENT
+==================================================
+
+Allow settling due-to/due-from balances.
+
+Example:
+
+Najeb Amin owes Sky Ariana:
+
+$100,000
+
+Settlement:
+
+Bank payment $100,000
+
+Clear both intercompany balances.
+
+==================================================
+43. INTERCOMPANY AGING
+==================================================
+
+Show:
+
+Company
+Counterparty Company
+Balance
+Age
+Oldest Transaction
+
+Useful for unsettled advances.
+
+==================================================
+44. GROUP ACCOUNTING PERIOD
+==================================================
+
+Each company can close its own period.
+
+Consolidated period can only be marked FINAL when selected companies are closed.
+
+Show:
+
+Najeb Amin:
+CLOSED
+
+Sky Ariana:
+OPEN
+
+Group:
+NOT READY
+
+==================================================
+45. CONSOLIDATED REPORT STATUS
+==================================================
+
+If any company has incomplete accounting:
+
+Show:
+
+CONSOLIDATED REPORT — PRELIMINARY
+
+Reasons:
+
+Purchase Costs Missing
+Bank Reconciliation Pending
+Company Period Open
+
+==================================================
+46. COMPANY OPENING BALANCES
+==================================================
+
+Opening balances must be company-specific.
+
+Never share opening balances between companies.
+
+==================================================
+47. COMPANY BACKUPS
+==================================================
+
+Full system backup includes all companies.
+
+Also support export:
+
+Single Company Data
+
+Example:
+
+AQ_NAJEB_AMIN_EXPORT.json
+
+Do not allow normal user to export companies they cannot access.
+
+==================================================
+48. COMPANY ARCHIVE
+==================================================
+
+Allow a company to become:
+
+ACTIVE
+INACTIVE
+ARCHIVED
+
+Archived company financial history remains readable.
+
+Never delete accounting history.
+
+==================================================
+49. DATABASE CONSTRAINTS
+==================================================
+
+Ensure company ownership consistency.
+
+Example:
+
+Invoice company
+must match
+bank/payment allocation company.
+
+Prevent accidental cross-company postings unless explicitly handled as intercompany transaction.
+
+==================================================
+50. CROSS-COMPANY VALIDATION
+==================================================
+
+If user tries:
+
+Pay Company A invoice
+from Company B bank account
+
+System must ask:
+
+IS THIS AN INTERCOMPANY PAYMENT?
+
+If YES:
+
+Create proper intercompany accounting.
+
+If NO:
+
+Block posting.
+
+==================================================
+51. CURRENT AQ DATA
+==================================================
+
+Existing imported AQ data must initially belong to the correct current company dataset.
+
+Do not arbitrarily split historical data across companies.
+
+Provide migration setting so Admin can assign/reassign historical records if necessary.
+
+Keep audit history.
+
+==================================================
+52. COMPANY SETUP WIZARD
+==================================================
+
+Create:
+
++ ADD COMPANY
+
+Steps:
+
+Company Information
+Base Currency
+Accounting Year
+Chart of Accounts
+Bank Accounts
+Opening Balances
+Document Numbering
+User Access
+
+==================================================
+53. COMPANY DASHBOARD HEADER
+==================================================
+
+Always clearly show active company.
+
+Example:
+
+AQ COMPANIES
+>
+NAJEB AMIN LTD
+
+This prevents accountants from accidentally entering data in wrong company.
+
+==================================================
+54. DIFFERENT COLOR IDENTIFIER
+==================================================
+
+Optionally allow each company to have:
+
+Logo
+Accent Color
+
+Use subtly in header.
+
+Do NOT sacrifice readability.
+
+==================================================
+55. SEARCH COMPANY CONTEXT
+==================================================
+
+Global search result should display owning company.
+
+Example:
+
+INV-001
+
+G.T India
+
+Company:
+NAJEB AMIN LTD
+
+==================================================
+56. TEST MULTI-COMPANY ACCOUNTING
+==================================================
+
+Create tests for:
+
+Company Isolation
+
+User Permission
+
+Separate Bank Balances
+
+Separate Customer Balances
+
+Separate Supplier Balances
+
+Intercompany Payment
+
+Intercompany Transfer
+
+Intercompany Reversal
+
+Intercompany Settlement
+
+Consolidated Elimination
+
+Consolidated P&L
+
+Consolidated Balance Sheet
+
+Company Period Close
+
+Cross-Company Posting Prevention
+
+==================================================
+57. CONSOLIDATION TEST
+==================================================
+
+Example:
+
+Company A receivable from Company B:
+
+$50,000
+
+Company B payable to Company A:
+
+$50,000
+
+Standalone Reports:
+
+show $50,000 each.
+
+Consolidated Report:
+
+eliminate both.
+
+Group assets/liabilities should not be inflated.
+
+==================================================
+58. ACCOUNTING SAFETY
+==================================================
+
+DO NOT create intercompany revenue for simple cash transfers.
+
+DO NOT create intercompany expense for simple cash transfers.
+
+Keep transfer and operating transactions separate.
+
+==================================================
+59. IMPLEMENTATION ORDER
+==================================================
+
+Implement now:
+
+1. Companies model
+2. Company ownership on financial records
+3. Company switcher
+4. Company access permissions
+5. Company-scoped APIs
+6. Company bank/cash/sarafi accounts
+7. Intercompany accounts
+8. Intercompany transaction engine
+9. Intercompany reconciliation
+10. Treasury dashboard
+11. Consolidated Trial Balance
+12. Consolidated P&L
+13. Consolidated Balance Sheet
+14. Consolidated Cash Position
+15. Company comparison
+16. Tests
+
+==================================================
+60. FINAL REQUIREMENT
+==================================================
+
+DO NOT RETURN ANOTHER PLAN.
+
+START MODIFYING THE EXISTING AQ COMPANIES PROJECT NOW.
+
+DO NOT CREATE A SECOND ACCOUNTING ENGINE.
+
+Extend the existing General Ledger and banking engine to support company_id.
+
+Perform a safe database migration.
+
+BACK UP DATABASE BEFORE MIGRATION.
+
+Create actual:
+
+Database migrations
+Models
+Services
+APIs
+Company permissions
+Intercompany engine
+Consolidation engine
+Frontend screens
+Treasury tools
+Reports
+Tests
+
+RUN:
+
+Backup verification
+Database migration
+Python tests
+Accounting integrity tests
+Multi-company isolation tests
+Intercompany tests
+API tests
+TypeScript check
+Lint
+Production build
+
+FIX ALL ERRORS BEFORE STOPPING.
+
+==================================================
+61. COMPLETION REPORT
+==================================================
+
+At completion report:
+
+COMPANY SYSTEM STATUS
+
+COMPANY SWITCHER STATUS
+
+COMPANY DATA ISOLATION STATUS
+
+USER COMPANY PERMISSIONS STATUS
+
+BANK ACCOUNT ISOLATION STATUS
+
+CUSTOMER LEDGER ISOLATION STATUS
+
+SUPPLIER LEDGER ISOLATION STATUS
+
+INTERCOMPANY ACCOUNTING STATUS
+
+INTERCOMPANY RECONCILIATION STATUS
+
+TREASURY STATUS
+
+CONSOLIDATED TRIAL BALANCE STATUS
+
+CONSOLIDATED P&L STATUS
+
+CONSOLIDATED BALANCE SHEET STATUS
+
+GROUP CASH POSITION STATUS
+
+DATABASE MIGRATION STATUS
+
+BACKUP STATUS
+
+TEST RESULTS
+
+REMAINING ISSUES
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-26T23:03:34-07:00.
+</ADDITIONAL_METADATA>

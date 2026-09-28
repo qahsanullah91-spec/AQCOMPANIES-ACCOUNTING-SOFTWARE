@@ -1,0 +1,707 @@
+@import "tailwindcss" source("../../src");
+@source "../../src";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  *, ::before, ::after {
+    box-sizing: border-box;
+    border-color: #e2e8f0;
+  }
+
+  .dark *, .dark ::before, .dark ::after {
+    border-color: #1e293b;
+  }
+
+  html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    line-height: 1.5;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    overflow-x: hidden;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: inherit;
+    font-weight: 700;
+    color: inherit;
+    letter-spacing: -0.015em;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  button, [type="button"], [type="reset"], [type="submit"] {
+    font-family: inherit;
+    font-size: 100%;
+    cursor: pointer;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    text-align: inherit;
+    color: inherit;
+  }
+
+  input, select, textarea {
+    font-family: inherit;
+    font-size: 100%;
+    color: inherit;
+  }
+
+  :root {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --brand-primary: #0284c7;
+    --brand-dark: #0f172a;
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+
+  .dark {
+    --bg-main: #0b0f19;
+    --bg-card: #0f172a;
+    --border-color: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --brand-primary: #38bdf8;
+    --brand-dark: #0284c7;
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+}
+
+/* =========================================================
+   IOS / IPHONE SAFE AREA & MOBILE OPTIMIZATIONS
+   ========================================================= */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+.top-safe {
+  top: env(safe-area-inset-top, 0px);
+}
+.bottom-safe {
+  bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Dynamic Viewport Units for iOS Safari */
+.min-h-screen-dvh {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.h-screen-dvh {
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* iOS Safari font-size zoom prevention: inputs must be >= 16px on mobile viewports */
+@media screen and (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Touch targets >= 44px on coarse pointer devices */
+@media (pointer: coarse) {
+  button,
+  .btn,
+  select,
+  input:not([type="checkbox"]):not([type="radio"]),
+  [role="button"] {
+    min-height: 44px;
+  }
+  .touch-target-sm {
+    min-height: 36px;
+    min-width: 36px;
+  }
+}
+
+/* Horizontal scroll indicator for tables on mobile */
+.table-scroll-hint {
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table-scroll-hint::-webkit-scrollbar {
+  height: 4px;
+}
+.table-scroll-hint::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+/* =========================================================
+   1. CARD & CONTAINER THEME STYLES
+   ========================================================= */
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dark .card {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+  color: #f8fafc;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+}
+
+.dark .table-container {
+  border-color: #1e293b;
+  background-color: #0f172a;
+}
+
+/* =========================================================
+   2. DATA TABLE THEME STYLES
+   ========================================================= */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table thead tr {
+  background-color: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dark .table thead tr {
+  background-color: #0f172a;
+  color: #94a3b8;
+  border-bottom-color: #1e293b;
+}
+
+.table th, .table td {
+  padding: 0.625rem 0.875rem;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.dark .table tbody tr {
+  border-bottom-color: #1e293b;
+  color: #cbd5e1;
+}
+
+.dark .table tbody tr:hover {
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+.sticky-header th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* =========================================================
+   3. FORMS, INPUTS & SELECTS THEME STYLES
+   ========================================================= */
+.input,
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea {
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.select,
+select {
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.input:focus,
+input:focus,
+.select:focus,
+select:focus,
+textarea:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.dark .input,
+.dark input[type="text"],
+.dark input[type="number"],
+.dark input[type="date"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="search"],
+.dark textarea {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.dark .select,
+.dark select {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+.dark select option {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+.dark .input:focus,
+.dark input:focus,
+.dark .select:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+/* =========================================================
+   4. BUTTON COMPONENT STYLES
+   ========================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.25rem;
+  user-select: none;
+}
+
+.btn-primary {
+  background-color: #0284c7;
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+.btn-primary:hover {
+  background-color: #0369a1;
+}
+
+.dark .btn-primary {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+.dark .btn-primary:hover {
+  background-color: #38bdf8;
+  color: #0f172a;
+}
+
+.btn-secondary {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+.btn-secondary:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.dark .btn-secondary {
+  background-color: #1e293b;
+  color: #cbd5e1;
+  border-color: #334155;
+}
+.dark .btn-secondary:hover {
+  background-color: #334155;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #ef4444;
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+.btn-danger:hover {
+  background-color: #dc2626;
+}
+
+/* =========================================================
+   5. BADGE COMPONENT STYLES
+   ========================================================= */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  line-height: 1rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.badge-success {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+.dark .badge-success {
+  background-color: rgba(22, 101, 52, 0.35);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.25);
+}
+
+.badge-warning {
+  background-color: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+.dark .badge-warning {
+  background-color: rgba(180, 83, 9, 0.35);
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.25);
+}
+
+.badge-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+.dark .badge-danger {
+  background-color: rgba(185, 28, 28, 0.35);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.25);
+}
+
+.badge-info {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+.dark .badge-info {
+  background-color: rgba(3, 105, 161, 0.35);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.badge-neutral {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+.dark .badge-neutral {
+  background-color: #1e293b;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+/* =========================================================
+   6. MODAL & POPUP DIALOG THEME STYLES
+   ========================================================= */
+.dark .fixed.inset-0 > div[class*="bg-white"] {
+  background-color: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  color: #f8fafc;
+}
+
+.dark .fixed.inset-0 h2,
+.dark .fixed.inset-0 h3 {
+  color: #f8fafc;
+}
+
+.dark .fixed.inset-0 .border-b {
+  border-bottom-color: #1e293b;
+}
+
+.dark .fixed.inset-0 .border-t {
+  border-top-color: #1e293b;
+}
+
+/* =========================================================
+   7. SMART CONTRAST AUTOMATION FOR THEME SWITCHING
+   ========================================================= */
+.dark .text-slate-900:not([class*="dark:text-"]) {
+  color: #f8fafc;
+}
+
+.dark .text-slate-800:not([class*="dark:text-"]) {
+  color: #f1f5f9;
+}
+
+.dark .text-slate-700:not([class*="dark:text-"]) {
+  color: #cbd5e1;
+}
+
+.dark label:not([class*="text-"]) {
+  color: #cbd5e1;
+}
+
+.dark .bg-slate-50:not([class*="dark:bg-"]) {
+  background-color: #1e293b;
+}
+
+.dark .bg-slate-100:not([class*="dark:bg-"]) {
+  background-color: #1e293b;
+}
+
+/* =========================================================
+   8. ALERT BOXES, BANNERS & ACCENT BOXES THEME STYLES
+   ========================================================= */
+.dark .bg-indigo-50:not([class*="dark:bg-"]) {
+  background-color: rgba(49, 46, 129, 0.25) !important;
+  border-color: rgba(99, 102, 241, 0.35) !important;
+}
+
+.dark .text-indigo-900:not([class*="dark:text-"]),
+.dark .text-indigo-800:not([class*="dark:text-"]),
+.dark .text-indigo-700:not([class*="dark:text-"]) {
+  color: #c7d2fe !important;
+}
+
+.dark .bg-emerald-50:not([class*="dark:bg-"]) {
+  background-color: rgba(6, 78, 59, 0.25) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+.dark .text-emerald-900:not([class*="dark:text-"]),
+.dark .text-emerald-800:not([class*="dark:text-"]) {
+  color: #a7f3d0 !important;
+}
+
+.dark .bg-rose-50:not([class*="dark:bg-"]) {
+  background-color: rgba(136, 19, 55, 0.25) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
+.dark .text-rose-900:not([class*="dark:text-"]),
+.dark .text-rose-800:not([class*="dark:text-"]) {
+  color: #fecdd3 !important;
+}
+
+.dark .bg-amber-50:not([class*="dark:bg-"]) {
+  background-color: rgba(120, 53, 15, 0.25) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+.dark .text-amber-900:not([class*="dark:text-"]),
+.dark .text-amber-800:not([class*="dark:text-"]) {
+  color: #fde68a !important;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* =========================================================
+   9. PRINT STYLES FOR FINANCIAL VOUCHERS & REPORTS
+   ========================================================= */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.page-break-before {
+  page-break-before: always;
+}
+
+.page-break-after {
+  page-break-after: always;
+}
+
+.page-break-inside-avoid {
+  page-break-inside: avoid;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  html, body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 10pt !important;
+    overflow: visible !important;
+    min-height: auto !important;
+    height: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Completely hide all application shell elements */
+  aside,
+  header,
+  nav,
+  .no-print,
+  button,
+  .sidebar,
+  .top-nav,
+  .banking-nav,
+  .accounting-nav,
+  .app-header,
+  [role="dialog"]:not(.print-dialog) {
+    display: none !important;
+  }
+
+  /* Make main container span 100% without margins or borders */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  /* Clean borders for printed cards */
+  .card, .table-container {
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+    page-break-inside: avoid;
+    border-radius: 0 !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .print-table thead {
+    display: table-header-group !important;
+  }
+
+  .print-table tr {
+    page-break-inside: avoid !important;
+  }
+
+  .print-table th, .print-table td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 5px 8px !important;
+    font-size: 9pt !important;
+  }
+
+  .print-header-repeat {
+    display: table-header-group !important;
+  }
+
+  .print-footer-repeat {
+    display: table-footer-group !important;
+  }
+}
+
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
+
+
+
