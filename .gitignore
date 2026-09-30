@@ -18,6 +18,7 @@ dist/
 *.egg-info/
 wheels/
 tsconfig.tsbuildinfo
+.vercel/
 
 # Python
 __pycache__/

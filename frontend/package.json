@@ -6,7 +6,8 @@
     "dev": "next dev -H 0.0.0.0 -p 3002",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3002",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy:vercel": "vercel deploy --prod"
   },
   "dependencies": {
     "clsx": "^2.1.1",
