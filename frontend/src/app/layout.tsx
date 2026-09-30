@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { NetworkProvider } from "@/context/NetworkContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { AppLayoutShell } from "@/components/AppLayoutShell";
 
 export const viewport: Viewport = {
@@ -59,7 +60,9 @@ export default function RootLayout({
       <body className="antialiased font-sans flex min-h-screen min-h-screen-dvh bg-slate-50 dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 selection:bg-sky-500/20">
         <ThemeProvider>
           <NetworkProvider>
-            <AppLayoutShell>{children}</AppLayoutShell>
+            <AuthProvider>
+              <AppLayoutShell>{children}</AppLayoutShell>
+            </AuthProvider>
           </NetworkProvider>
         </ThemeProvider>
       </body>

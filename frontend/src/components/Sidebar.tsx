@@ -37,7 +37,9 @@ import {
   ChevronRight,
   ChevronDown,
   X,
+  Lock,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavItem {
   name: string;
@@ -149,6 +151,7 @@ const navGroups: NavGroup[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { lockSession } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
@@ -353,11 +356,28 @@ export function Sidebar() {
                   AQ Local Server
                 </span>
               </div>
-              <span className="font-mono text-slate-400 text-[10px] shrink-0">v1.0.0</span>
+              <div className="flex items-center space-x-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={lockSession}
+                  className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-500 transition-colors"
+                  title="Lock Screen (macOS)"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                </button>
+                <span className="font-mono text-slate-400 text-[10px]">v1.0.0</span>
+              </div>
             </>
           ) : (
             <div className="w-full flex justify-center">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <button
+                type="button"
+                onClick={lockSession}
+                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-500 transition-colors"
+                title="Lock Screen (macOS)"
+              >
+                <Lock className="w-3.5 h-3.5" />
+              </button>
             </div>
           )}
         </div>

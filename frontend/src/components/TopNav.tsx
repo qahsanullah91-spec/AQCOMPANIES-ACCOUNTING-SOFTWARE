@@ -26,9 +26,11 @@ import {
   Ship,
   FileText,
   ChevronRight,
+  Lock,
 } from "lucide-react";
 import { GlobalSearchModal } from "./GlobalSearchModal";
 import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
 import { API_BASE } from "@/lib/api";
 
 interface Company {
@@ -43,6 +45,7 @@ interface Company {
 export function TopNav() {
   const pathname = usePathname();
   const { isDark, toggleTheme } = useTheme();
+  const { user, lockSession, logout } = useAuth();
 
   // Modals & Dropdowns
   const [searchOpen, setSearchOpen] = useState(false);
@@ -460,30 +463,30 @@ export function TopNav() {
               aria-label="Account Menu"
             >
               <div className="w-7 h-7 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                AQ
+                {user?.initials || "AQ"}
               </div>
               <div className="hidden lg:block text-left text-[11px] leading-tight pr-1">
                 <div className="font-bold text-slate-900 dark:text-white truncate max-w-[110px]">
-                  Ahsanullah Qureshi
+                  {user?.full_name || "Ahsanullah Qureshi"}
                 </div>
                 <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                  ADMIN
+                  {user?.role || "ADMIN"}
                 </div>
               </div>
               <ChevronDown className="w-3 h-3 text-slate-400 hidden lg:block" />
             </button>
 
             {userMenuOpen && (
-              <div className="absolute right-0 mt-1.5 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-50 text-xs">
+              <div className="absolute right-0 mt-1.5 w-60 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-50 text-xs">
                 {/* Account Details Header */}
                 <div className="px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30">
                   <div className="font-bold text-slate-900 dark:text-white">
-                    Ahsanullah Qureshi
+                    {user?.full_name || "Ahsanullah Qureshi"}
                   </div>
-                  <div className="text-[11px] text-slate-400">admin@aqcompanies.com</div>
+                  <div className="text-[11px] text-slate-400">{user?.email || "admin@aqcompanies.com"}</div>
                   <div className="mt-1">
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300">
-                      SYSTEM ADMINISTRATOR
+                      {user?.title || "SYSTEM ADMINISTRATOR"}
                     </span>
                   </div>
                 </div>
@@ -491,6 +494,7 @@ export function TopNav() {
                 <div className="py-1">
                   <Link
                     href="/settings"
+                    onClick={() => setUserMenuOpen(false)}
                     className="flex items-center space-x-2.5 px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     <User className="w-4 h-4 text-slate-400" />
@@ -498,6 +502,7 @@ export function TopNav() {
                   </Link>
                   <Link
                     href="/settings/companies"
+                    onClick={() => setUserMenuOpen(false)}
                     className="flex items-center space-x-2.5 px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     <Building2 className="w-4 h-4 text-slate-400" />
@@ -505,6 +510,7 @@ export function TopNav() {
                   </Link>
                   <Link
                     href="/settings"
+                    onClick={() => setUserMenuOpen(false)}
                     className="flex items-center space-x-2.5 px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     <SettingsIcon className="w-4 h-4 text-slate-400" />
@@ -514,11 +520,25 @@ export function TopNav() {
 
                 <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
 
+                {/* macOS Lock Screen Action */}
                 <button
                   type="button"
                   onClick={() => {
                     setUserMenuOpen(false);
-                    alert("Logged in as Ahsanullah Qureshi (ADMIN). Session is active.");
+                    lockSession();
+                  }}
+                  className="w-full flex items-center space-x-2.5 px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
+                >
+                  <Lock className="w-4 h-4 text-amber-500" />
+                  <span className="font-medium">Lock Screen (macOS)</span>
+                </button>
+
+                {/* Log Out */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    logout();
                   }}
                   className="w-full flex items-center space-x-2.5 px-3 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors text-left"
                 >

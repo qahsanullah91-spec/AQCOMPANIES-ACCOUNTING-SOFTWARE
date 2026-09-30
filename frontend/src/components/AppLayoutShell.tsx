@@ -10,6 +10,7 @@ import { MobileMoreDrawer } from "@/components/MobileMoreDrawer";
 import { MobileQuickActionFab } from "@/components/MobileQuickActionFab";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SessionExpiryModal } from "@/components/SessionExpiryModal";
+import { MacOSLoginScreen } from "@/components/MacOSLoginScreen";
 
 export function AppLayoutShell({ children }: { children: React.ReactNode }) {
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
@@ -55,6 +56,7 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <MacOSLoginScreen />
       <OfflineBanner />
       <SessionExpiryModal />
 

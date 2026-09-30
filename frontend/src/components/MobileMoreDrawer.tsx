@@ -28,8 +28,11 @@ import {
   ArrowRightLeft,
   FileSpreadsheet,
   FileText,
+  Lock,
+  LogOut,
 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
 import { API_BASE } from "@/lib/api";
 
 interface MobileMoreDrawerProps {
@@ -52,6 +55,7 @@ export function MobileMoreDrawer({
 }: MobileMoreDrawerProps) {
   const pathname = usePathname();
   const { isDark, toggleTheme } = useTheme();
+  const { user, lockSession, logout } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [activeCompanyId, setActiveCompanyId] = useState<number>(0);
 
@@ -261,29 +265,57 @@ export function MobileMoreDrawer({
         </div>
 
         {/* Footer User & Actions */}
-        <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 flex items-center justify-between text-xs">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-slate-700 dark:text-slate-200 text-xs">
-              AQ
-            </div>
-            <div>
-              <div className="font-bold text-slate-900 dark:text-white leading-tight">
-                Ahsanullah Qureshi
+        <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 flex flex-col space-y-2.5 text-xs">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                {user?.initials || "AQ"}
               </div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400">
-                Administrator
+              <div>
+                <div className="font-bold text-slate-900 dark:text-white leading-tight">
+                  {user?.full_name || "Ahsanullah Qureshi"}
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                  {user?.role || "ADMINISTRATOR"}
+                </div>
               </div>
             </div>
+
+            <Link
+              href="/settings"
+              onClick={onClose}
+              className="flex items-center space-x-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 p-1.5"
+            >
+              <Settings className="w-4 h-4" />
+              <span>Settings</span>
+            </Link>
           </div>
 
-          <Link
-            href="/settings"
-            onClick={onClose}
-            className="flex items-center space-x-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 p-2 min-h-[44px]"
-          >
-            <Settings className="w-4 h-4" />
-            <span>Settings</span>
-          </Link>
+          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-200/60 dark:border-slate-800/60">
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                lockSession();
+              }}
+              className="flex items-center justify-center space-x-1.5 py-2 px-3 rounded-xl bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-500" />
+              <span>Lock macOS</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                logout();
+              }}
+              className="flex items-center justify-center space-x-1.5 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Log Out</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
